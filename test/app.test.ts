@@ -9,7 +9,7 @@ describe('Fastify app', () => {
       url: '/health'
     });
 
-    expect(response.statusCode).toBe(200);
+    expect(response.statusCode).toBe(999) // FORCE_FAIL;
     expect(response.json()).toEqual({ status: 'ok' });
     await app.close();
   });
@@ -23,6 +23,18 @@ describe('Fastify app', () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.json().message).toBe('CI/CD Lab Fastify app is running');
+    await app.close();
+  });
+
+  it('GET /version returns app version', async () => {
+    const app = buildApp({ logger: false });
+    const response = await app.inject({
+      method: 'GET',
+      url: '/version'
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({ version: process.env.APP_VERSION || 'dev' });
     await app.close();
   });
 });
