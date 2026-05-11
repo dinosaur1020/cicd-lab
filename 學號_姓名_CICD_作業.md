@@ -9,7 +9,6 @@
 
 ## B12705026 丁崇耘
 
-
 ### 一、CI Pipeline 說明
 
 本專案在 GitHub 上以 **GitHub Actions** 建立獨立作業用 workflow。此 pipeline 在 **`git push` 至任一分支時自動觸發**，於 `ubuntu-latest` 上執行下列檢查：
@@ -18,7 +17,7 @@
 2. **Prettier check**：執行 `npm run format:check`，以專案設定的 Prettier 規則檢查格式，不符合則失敗。
 3. **Test**：以 **Vitest** 執行單元測試，並使用 **JUnit XML** 報表寫入 `test-results/junit.xml`。
 
-**失敗行為**：上述任一步驟失敗時，該 job 即為失敗，GitHub Actions  run 會顯示為失敗（紅色），符合「任一檢查失敗時 pipeline 顯示失敗」之要求。
+**失敗行為**：上述任一步驟失敗時，該 job 即為失敗，GitHub Actions run 會顯示為失敗（紅色），符合「任一檢查失敗時 pipeline 顯示失敗」之要求。
 
 **測試結果呈現**：使用 Marketplace 上的現成 Action **[EnricoMi/publish-unit-test-result-action](https://github.com/EnricoMi/publish-unit-test-result-action)**（`@v2`）讀取 JUnit 檔，將結果發布至該次 run 的 **Job summary** 與 **Checks**（此 action 建立名為 `Vitest results` 的 check）。若測試步驟因前置步驟失敗而未執行，則不會產生 `junit.xml`，發布步驟會透過 `hashFiles` 條件略過，避免誤報。
 
@@ -84,16 +83,16 @@ jobs:
 
 ## 三、Pipeline 設計說明（工具與策略）
 
-| 設計要點 | 說明 |
-|----------|------|
-| **觸發條件** | 僅設定 `on: push`，符合「push 時自動執行」；所有分支 push 皆會觸發。 |
-| **執行環境** | `ubuntu-latest`，與常見 Node 專案 CI 一致。 |
-| **Node 版本** | `actions/setup-node@v5` 固定 `node-version: '22'`，與專案 `package.json` 的 `engines.node`（`>=22 <25`）一致。 |
-| **依賴安裝** | `npm ci` 依 lockfile 可重現安裝，適合 CI。 |
-| **檢查順序** | 先型別、再格式、最後測試：越早失敗越早停止後續步驟，節省 runner 時間。 |
-| **測試報表** | Vitest 同時使用 `default`（主控台可讀）與 `junit`（`--outputFile=test-results/junit.xml`），兼顧 log 與標準 JUnit 交換格式。 |
+| 設計要點         | 說明                                                                                                                                                                                                                               |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **觸發條件**     | 僅設定 `on: push`，符合「push 時自動執行」；所有分支 push 皆會觸發。                                                                                                                                                               |
+| **執行環境**     | `ubuntu-latest`，與常見 Node 專案 CI 一致。                                                                                                                                                                                        |
+| **Node 版本**    | `actions/setup-node@v5` 固定 `node-version: '22'`，與專案 `package.json` 的 `engines.node`（`>=22 <25`）一致。                                                                                                                     |
+| **依賴安裝**     | `npm ci` 依 lockfile 可重現安裝，適合 CI。                                                                                                                                                                                         |
+| **檢查順序**     | 先型別、再格式、最後測試：越早失敗越早停止後續步驟，節省 runner 時間。                                                                                                                                                             |
+| **測試報表**     | Vitest 同時使用 `default`（主控台可讀）與 `junit`（`--outputFile=test-results/junit.xml`），兼顧 log 與標準 JUnit 交換格式。                                                                                                       |
 | **發布測試結果** | 採官方文件建議的 `if: (!cancelled())`，在測試步驟失敗時仍會執行發布（若有 junit 檔），便於在 Actions 上檢視失敗案例；`action_fail: false` 避免「發布」步驟額外改變成敗語意——**整體 job 成敗仍由 typecheck／prettier／test 決定**。 |
-| **快取** | `cache: npm` 加速重複執行。 |
+| **快取**         | `cache: npm` 加速重複執行。                                                                                                                                                                                                        |
 
 ---
 
@@ -156,4 +155,4 @@ _（若你採用範例 A 作為唯一失敗案例，本節可刪圖或改為「�
 
 ---
 
-_匯出 PDF 時，建議使用與作業要求一致之檔名：`學號_姓名_CICD_作業.pdf`。_
+*匯出 PDF 時，建議使用與作業要求一致之檔名：`學號*姓名*CICD*作業.pdf`。\_
