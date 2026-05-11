@@ -1,6 +1,9 @@
 import Fastify, { FastifyServerOptions } from 'fastify';
 
 export function buildApp(options: FastifyServerOptions = {}) {
+  // 作業 5.1：故意製造型別錯誤以便 CI 失敗截圖；截圖完成後請刪除此行與下一行
+  const _ciDemoTypeError: string = 1;
+
   const app = Fastify({
     logger: options.logger ?? true,
     ...options

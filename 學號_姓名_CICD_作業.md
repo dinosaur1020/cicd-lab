@@ -112,40 +112,16 @@ jobs:
 
 ### 五、失敗案例說明
 
-以下擇一（或多個）人為製造錯誤以展示 pipeline 失敗與排查方式。實際繳交時請**在截圖對應到你故意推上的那一版**，修正後可再附一張成功 run 作為對照（若作業未要求可不附）。
-
 #### 5.1 範例 A：TypeScript 型別錯誤
 
-- **作法**：例如在 `src/app.ts` 暫時加入 `const _demo: string = 1;` 等無法通過型別檢查的程式碼，commit 並 push。
+本次實作已在 `src/app.ts` 的 `buildApp` 開頭加入示範用程式（變數名 `_ciDemoTypeError`，將數字指派給 `string` 型別），與下方步驟一致：
+
+- **作法**：將含上述錯誤的 commit **push** 至 GitHub（類似：`git add src/app.ts && git commit -m "demo: intentional TS error for CI screenshot" && git push`）。
 - **預期**：`TypeScript typecheck` 步驟失敗，整體 workflow 失敗。
-- **原因**：`tsc --noEmit` 報告型別不相容。
-- **修正**：刪除或改正該行程式，使 `npm run typecheck` 本地通過後再 push。
+- **原因**：`tsc --noEmit` 報告 `Type 'number' is not assignable to type 'string'`（型別不相容）。
+- **修正**：刪除 `src/app.ts` 內標註「作業 5.1」的兩行程式（註解 + `const _ciDemoTypeError`），確認本地 `npm run typecheck` 通過後再 commit／push，還原綠燈。
 
 **（請插入截圖：此情境下 pipeline failed 的 Actions 畫面）**
-
----
-
-#### 5.2 範例 B：Prettier 格式錯誤
-
-- **作法**：故意破壞某個已受 Prettier 檢查的檔案格式（例如註解掉分號、任意縮排），未執行 `npm run format` 即 push。
-- **預期**：`Prettier check` 步驟失敗。
-- **原因**：`prettier --check` 發現與格式化結果不一致。
-- **修正**：執行 `npm run format`（或手動還原為符合規範的內容）後再 commit／push。
-
-**（請插入截圖：此情境下 pipeline failed 的 Actions 畫面）**  
-_（若你採用範例 A 作為唯一失敗案例，本節可刪圖或改為「未採用」。）_
-
----
-
-#### 5.3 範例 C：測試失敗
-
-- **作法**：例如在 `test/app.test.ts` 暫時將某斷言改為錯誤預期（如 `expect(response.statusCode).toBe(999)`），push。
-- **預期**：`Test (Vitest + JUnit)` 失敗；若有產生 `junit.xml`，可在 Job summary／Checks 裡看到失敗案例。
-- **原因**：Vitest 偵測斷言失敗，程序以非零離開碼結束。
-- **修正**：還原正確斷言，本地 `npm test` 通過後再 push。
-
-**（請插入截圖：此情境下 pipeline failed 的 Actions 畫面）**  
-_（若你採用範例 A 作為唯一失敗案例，本節可刪圖或改為「未採用」。）_
 
 ---
 
